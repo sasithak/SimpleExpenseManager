@@ -1,10 +1,25 @@
 package lk.ac.mrt.cse.dbs.simpleexpensemanager.control;
 
-import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.exception.ExpenseManagerException;
+import android.content.Context;
+
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.PersistentAccountDAO;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.impl.PersistentTransactionDAO;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.DatabaseModel;
 
 public class PersistentExpenseManager extends ExpenseManager {
-    @Override
-    public void setup() throws ExpenseManagerException {
+    Context context;
 
+    public PersistentExpenseManager(Context context) {
+        this.context = context;
+        setup();
+    }
+
+    @Override
+    public void setup() {
+        PersistentAccountDAO persistentAccountDAO = new PersistentAccountDAO();
+        PersistentTransactionDAO persistentTransactionDAO = new PersistentTransactionDAO();
+        DatabaseModel databaseModel = new DatabaseModel(context, persistentAccountDAO, persistentTransactionDAO);
+        setAccountsDAO(persistentAccountDAO);
+        setTransactionsDAO(persistentTransactionDAO);
     }
 }
