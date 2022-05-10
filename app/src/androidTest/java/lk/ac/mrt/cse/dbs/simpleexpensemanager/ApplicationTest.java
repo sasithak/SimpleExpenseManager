@@ -63,7 +63,7 @@ public class ApplicationTest {
 
     @Test
     public void testUpdateAccountBalance() throws InvalidAccountException {
-        String accNo = "5627X";
+        String accNo = "8961Y";
         String bankName = "BOC";
         String accHolder = "Sasitha Thathsara";
         double balance = 10000;
