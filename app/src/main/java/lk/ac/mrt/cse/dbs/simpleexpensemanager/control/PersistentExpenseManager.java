@@ -8,6 +8,7 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.DatabaseModel;
 
 public class PersistentExpenseManager extends ExpenseManager {
     Context context;
+    DatabaseModel databaseModel;
 
     public PersistentExpenseManager(Context context) {
         this.context = context;
@@ -18,8 +19,12 @@ public class PersistentExpenseManager extends ExpenseManager {
     public void setup() {
         PersistentAccountDAO persistentAccountDAO = new PersistentAccountDAO();
         PersistentTransactionDAO persistentTransactionDAO = new PersistentTransactionDAO();
-        DatabaseModel databaseModel = new DatabaseModel(context, persistentAccountDAO, persistentTransactionDAO);
+        databaseModel = new DatabaseModel(context, persistentAccountDAO, persistentTransactionDAO);
         setAccountsDAO(persistentAccountDAO);
         setTransactionsDAO(persistentTransactionDAO);
+    }
+
+    public void clearData() {
+        databaseModel.clear();
     }
 }

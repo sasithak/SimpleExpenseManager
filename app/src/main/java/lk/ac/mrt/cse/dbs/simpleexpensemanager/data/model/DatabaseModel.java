@@ -43,4 +43,9 @@ public class DatabaseModel extends SQLiteOpenHelper {
         if (writable) return getWritableDatabase();
         return getReadableDatabase();
     }
+
+    public void clear() {
+        onUpgrade(getWritableDatabase(), DB_VERSION, DB_VERSION);
+    }
+
 }
