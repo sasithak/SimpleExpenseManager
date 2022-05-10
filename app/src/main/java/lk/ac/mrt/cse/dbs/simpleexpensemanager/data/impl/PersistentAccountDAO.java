@@ -15,7 +15,6 @@ import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 public class PersistentAccountDAO implements AccountDAO {
     // Database related constants
     private static final String TABLE_NAME = "tbl_account";
-    private static final String COLUMN_ID = "id";
     private static final String COLUMN_ACCOUNT_NO = "account_no";
     private static final String COLUMN_BANK_NAME = "bank_name";
     private static final String COLUMN_ACCOUNT_HOLDER_NAME = "account_holder_name";
@@ -60,10 +59,10 @@ public class PersistentAccountDAO implements AccountDAO {
         Cursor cursor = db.rawQuery(getAccountsQuery, null);
         if (cursor.moveToFirst()) {
             do {
-                String accountNo = cursor.getString(1);
-                String bankName = cursor.getString(2);
-                String accountHolderName = cursor.getString(3);
-                double balance = cursor.getDouble(4);
+                String accountNo = cursor.getString(0);
+                String bankName = cursor.getString(1);
+                String accountHolderName = cursor.getString(2);
+                double balance = cursor.getDouble(3);
                 Account account = new Account(accountNo, bankName, accountHolderName, balance);
                 accounts.add(account);
             } while(cursor.moveToNext());
@@ -84,10 +83,10 @@ public class PersistentAccountDAO implements AccountDAO {
         Cursor cursor = db.rawQuery(GET_ACCOUNT_SQL_QUERY, new String[]{accountNo});
         if (cursor.moveToFirst()) {
             do {
-                accountNo = cursor.getString(1);
-                String bankName = cursor.getString(2);
-                String accountHolderName = cursor.getString(3);
-                double balance = cursor.getDouble(4);
+                accountNo = cursor.getString(0);
+                String bankName = cursor.getString(1);
+                String accountHolderName = cursor.getString(2);
+                double balance = cursor.getDouble(3);
                 account = new Account(accountNo, bankName, accountHolderName, balance);
             } while(cursor.moveToNext());
         } else {
@@ -154,8 +153,7 @@ public class PersistentAccountDAO implements AccountDAO {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         String CREATE_TABLE_QUERY =
                 "create table " + TABLE_NAME + " ( " +
-                        COLUMN_ID + " integer primary key autoincrement, " +
-                        COLUMN_ACCOUNT_NO + " text, " +
+                        COLUMN_ACCOUNT_NO + " text primary key, " +
                         COLUMN_BANK_NAME + " text, " +
                         COLUMN_ACCOUNT_HOLDER_NAME + " text, " +
                         COLUMN_BALANCE + " real " +
