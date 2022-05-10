@@ -16,14 +16,79 @@
 
 package lk.ac.mrt.cse.dbs.simpleexpensemanager;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import android.content.Context;
+
+import androidx.test.core.app.ApplicationProvider;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.List;
+
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.control.PersistentExpenseManager;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.exception.InvalidAccountException;
+import lk.ac.mrt.cse.dbs.simpleexpensemanager.data.model.ExpenseType;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class ApplicationTest extends ApplicationTestCase<Application> {
-    public ApplicationTest() {
-        super(Application.class);
+public class ApplicationTest {
+    private PersistentExpenseManager expenseManager;
+
+    @Before
+    public void init() {
+        Context context = ApplicationProvider.getApplicationContext();
+        expenseManager = new PersistentExpenseManager(context);
+
+        // clear the content of the database before each test
+        // expenseManager.clearData();
     }
+
+    @Test
+    public void testAddAccount() {
+        String accNo = "5627X";
+        String bankName = "BOC";
+        String accHolder = "Sasitha Thathsara";
+        double balance = 10000;
+        expenseManager.addAccount(accNo, bankName, accHolder, balance);
+
+        List<String> accNumbers = expenseManager.getAccountNumbersList();
+        boolean exists = accNumbers.contains(accNo);
+
+        assertTrue(exists);
+    }
+
+    @Test
+    public void testUpdateAccountBalance() throws InvalidAccountException {
+        String accNo = "5627X";
+        String bankName = "BOC";
+        String accHolder = "Sasitha Thathsara";
+        double balance = 10000;
+        expenseManager.addAccount(accNo, bankName, accHolder, balance);
+
+        // test an expense
+        int day = 10, month = 5, year = 2022;
+        ExpenseType exType = ExpenseType.EXPENSE;
+        String amount = "5500";
+        expenseManager.updateAccountBalance(accNo, day, month, year, exType, amount);
+
+        double curBalance = expenseManager.getAccountsDAO().getAccount(accNo).getBalance();
+        assertEquals(curBalance, 4500, 0.01);
+        double trxAmount = expenseManager.getTransactionLogs().get(0).getAmount();
+        assertEquals(Double.parseDouble(amount), trxAmount, 0.01);
+
+        // test an income
+        exType = ExpenseType.INCOME;
+        amount = "7500";
+        expenseManager.updateAccountBalance(accNo, day, month, year, exType, amount);
+
+        curBalance = expenseManager.getAccountsDAO().getAccount(accNo).getBalance();
+        assertEquals(curBalance, 12000, 0.01);
+        trxAmount = expenseManager.getTransactionLogs().get(0).getAmount();
+        assertEquals(Double.parseDouble(amount), trxAmount, 0.01);
+    }
+
 }
